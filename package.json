@@ -10,6 +10,8 @@
     "build-and-watch": "yarn nodemon --watch src/ --watch public/ --ext '*' --exec 'yarn run build'"
   },
   "dependencies": {
+    "@fluentui/react": "^8.12.0",
+    "@fluentui/react-icons-mdl2": "^1.0.5",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -17,6 +19,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.135",
+    "@types/lodash": "^4.14.168",
     "eslint-plugin-prettier": "^3.4.0",
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1"

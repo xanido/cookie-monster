@@ -7,6 +7,12 @@
     "default_popup": "index.html",
     "default_title": "Open Cookie Monster"
   },
+  "permissions": [
+    "activeTab",
+    "cookies",
+    "http://*/*",
+    "https://*/*"
+  ],
   "icons": {
     "16": "logo192.png",
     "48": "logo192.png",
