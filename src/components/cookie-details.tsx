@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, Fragment } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  Fragment,
+  useCallback,
+} from "react";
 import { merge } from "lodash";
 import {
   PrimaryButton,
@@ -11,8 +17,14 @@ import { DeleteIcon } from "@fluentui/react-icons-mdl2";
 
 import TransparentDetailsList from "../fluent/transparent-details-list";
 
-type KeyOfObject<O> = keyof O;
-type KnownCookie = KeyOfObject<typeof COOKIES>;
+// generic utility types
+// makes app properties optional except for properties listed in K
+// type OptionalExcept<T, K extends keyof T> = Partial<T> & { [P in K]-?: T[P] };
+// simpler:
+type OptionalExcept<T, K extends keyof T> = Partial<T> & Required<Pick<T, K>>;
+
+type SetCookieDetails = OptionalExcept<chrome.cookies.Cookie, "name" | "value">;
+type DeleteCookieDetails = OptionalExcept<chrome.cookies.Cookie, "name">;
 
 const COOKIES = {
   foo: "bar",
@@ -36,8 +48,7 @@ function CookieDetails() {
   }, []);
 
   // util to reload cookies for the active domain
-  const readCookiesIntoState = () => {
-    if (!activeDomain) return;
+  const readCookiesIntoState = useCallback(() => {
     chrome.cookies.getAll(
       {
         domain: activeDomain,
@@ -46,30 +57,32 @@ function CookieDetails() {
         queue.current.then(() => setCookies(cookies_));
       }
     );
-  };
+  }, [activeDomain]);
 
-  // immediately try to read the cookies
-  useEffect(readCookiesIntoState, [activeDomain]);
+  // immediately try to read the cookies after activeDomain has been determined
+  useEffect(() => {
+    activeDomain && readCookiesIntoState();
+  }, [activeDomain, readCookiesIntoState]);
 
   // handler factory - deletes a specific chrome.cookies.Cookie
   // and then re-syncs the cookie state
-  const handleDeleteCookie = (cookie: chrome.cookies.Cookie) => () => {
+  const handleDeleteCookie = (cookie: DeleteCookieDetails) => () => {
     chrome.cookies.remove(
       {
+        url: String(activeUrl),
         name: cookie.name,
-        url: `https://${cookie.domain}${cookie.path}`,
       },
       readCookiesIntoState
     );
   };
 
   //handler factory - inject a known cookie from the COOKIES dict
-  const injectCookie = (cookieKey: KnownCookie) => () => {
+  const handleInjectCookie = (cookie: SetCookieDetails) => () => {
     chrome.cookies.set(
       {
         url: String(activeUrl),
-        name: cookieKey,
-        value: COOKIES[cookieKey],
+        name: cookie.name,
+        value: cookie.value,
       },
       readCookiesIntoState
     );
@@ -80,10 +93,10 @@ function CookieDetails() {
       <PrimaryButton
         menuProps={{
           shouldFocusOnMount: true,
-          items: (Object.keys(COOKIES) as KnownCookie[]).map((name) => ({
+          items: Object.entries(COOKIES).map(([name, value]) => ({
             key: name,
             name: name,
-            onClick: injectCookie(name),
+            onClick: handleInjectCookie({ name, value }),
           })),
         }}
       >
