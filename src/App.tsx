@@ -6,10 +6,10 @@ import {
   SelectionMode,
   IDetailsRowProps,
   DetailsRow,
-  DetailsList,
 } from "@fluentui/react";
 import { DeleteIcon } from "@fluentui/react-icons-mdl2";
 
+import TransparentDetailsList from "./fluent/transparent-details-list";
 import logo from "./logo.svg";
 import cookieMonster from "./cookie-monster.png";
 import "./App.css";
@@ -56,7 +56,7 @@ function App() {
 
   // handler factory - deletes a specific chrome.cookies.Cookie
   // and then re-syncs the cookie state
-  const handleDeleteCookie = (cookie: any) => () => {
+  const handleDeleteCookie = (cookie: chrome.cookies.Cookie) => () => {
     chrome.cookies.remove(
       {
         name: cookie.name,
@@ -98,7 +98,7 @@ function App() {
           Inject cookie
         </PrimaryButton>
 
-        <DetailsList
+        <TransparentDetailsList
           layoutMode={DetailsListLayoutMode.justified}
           compact
           items={cookies.map((cookie) => ({
