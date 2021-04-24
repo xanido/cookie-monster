@@ -25,7 +25,9 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.135",
-    "nodemon": "^2.0.7"
+    "eslint-plugin-prettier": "^3.4.0",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1"
   },
   "eslintConfig": {
     "extends": [
