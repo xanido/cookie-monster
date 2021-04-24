@@ -1,22 +1,45 @@
 import React, { useState } from "react";
-import { Stack, Nav } from "@fluentui/react";
+import { Stack } from "@fluentui/react/lib/Stack";
+import { INavLink, Nav } from "@fluentui/react/lib/Nav";
 
 import CookieDetails from "./components/cookie-details";
-import cookieMonster from "./cookie-monster.png";
+import imgCookieMonster from "./cookie-monster.png";
 import "./App.css";
+import Workflows from "./components/workflows";
+
+enum Screen {
+  Cookies = "Cookies",
+  Workflows = "Workflows",
+  Settings = "Settings",
+}
+
+interface ScreenLink extends INavLink {
+  name: Screen;
+}
+
+const isScreenLink = (link: INavLink): link is ScreenLink =>
+  link.name in Screen;
+const makeScreenLink = (name: Screen): INavLink => {
+  return {
+    name,
+    key: name,
+    url: "",
+  };
+};
 
 function App() {
-  const [screen, setScreen] = useState("Cookies");
+  const [screen, setScreen] = useState(Screen.Cookies);
 
   const main = ((screen) => {
     switch (screen) {
-      case "Workflows":
-        return (
-          <img src={cookieMonster} alt="foo" style={{ maxWidth: "100%" }} />
-        );
-      case "Cookies":
-      default:
+      case Screen.Cookies:
         return <CookieDetails />;
+      case Screen.Workflows:
+        return <Workflows />;
+      default:
+        return (
+          <img src={imgCookieMonster} alt="foo" style={{ maxWidth: "100%" }} />
+        );
     }
   })(screen);
 
@@ -25,21 +48,15 @@ function App() {
       <Stack horizontal>
         <Stack.Item>
           <Nav
-            onLinkClick={(event, item) => item && setScreen(item.name)}
+            onLinkClick={(event, link) =>
+              link && isScreenLink(link) && setScreen(link.name)
+            }
             groups={[
               {
-                links: [
-                  {
-                    name: "Cookies",
-                    url: "",
-                  },
-                  {
-                    name: "Workflows",
-                    url: "",
-                  },
-                ],
+                links: Object.values(Screen).map(makeScreenLink),
               },
             ]}
+            selectedKey={screen}
           />
         </Stack.Item>
         <Stack.Item grow>

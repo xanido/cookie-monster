@@ -5,7 +5,7 @@ import {
   DetailsHeader,
   IDetailsListProps,
   DetailsRow,
-} from "@fluentui/react";
+} from "@fluentui/react/lib/DetailsList";
 
 // the styles prop needs to be explicitly available in the TProps type
 // and also compatible with fluentui props that include a style prop

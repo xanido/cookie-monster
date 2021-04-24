@@ -7,15 +7,16 @@ import React, {
 } from "react";
 import { merge } from "lodash";
 import {
-  PrimaryButton,
   DetailsListLayoutMode,
-  SelectionMode,
   IDetailsRowProps,
   DetailsRow,
-} from "@fluentui/react";
+} from "@fluentui/react/lib/DetailsList";
+import { PrimaryButton } from "@fluentui/react/lib/Button";
+import { SelectionMode } from "@fluentui/react/lib/Utilities";
 import { DeleteIcon } from "@fluentui/react-icons-mdl2";
 
-import TransparentDetailsList from "../fluent/transparent-details-list";
+import TransparentDetailsList from "./fluentui/transparent-details-list";
+import { useActiveTab } from "../utilities/use-active-tab";
 
 // generic utility types
 // makes app properties optional except for properties listed in K
@@ -34,18 +35,9 @@ const COOKIES = {
 
 function CookieDetails() {
   const [cookies, setCookies] = useState<chrome.cookies.Cookie[]>([]);
-  const [activeUrl, setActiveUrl] = useState<URL>();
-  const activeDomain = activeUrl?.host;
   const queue = useRef(Promise.resolve());
-
-  // read the current active tab url
-  useEffect(() => {
-    chrome.tabs &&
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const url = new URL(tabs[0].url as string);
-        setActiveUrl(url);
-      });
-  }, []);
+  const activeUrl = useActiveTab();
+  const activeDomain = activeUrl?.host;
 
   // util to reload cookies for the active domain
   const readCookiesIntoState = useCallback(() => {
